@@ -107,6 +107,9 @@ def test_save_load_roundtrip(tmp_path):
     path = tmp_path / "pc.pt"
     m.save(path)
     m2 = PatchCore.load(path, device="cpu", pretrained=False)
+    # pretrained=False means random backbone weights, so copy m's weights: this
+    # test checks the memory-bank save/load path (real use loads ImageNet weights).
+    m2.extractor.load_state_dict(m.extractor.state_dict())
     x = imgs[:2]
     s1, _ = m.predict(x)
     s2, _ = m2.predict(x)
